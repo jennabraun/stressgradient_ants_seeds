@@ -1,0 +1,70 @@
+---
+title: "Data"
+format: html
+editor: visual
+---
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+
+## Seeds
+
+```{r}
+seed2023 <- read.csv("Raw Data/seedrates2023.csv")
+#526 put out
+seed2023 <- filter(seed2023, ending.weight != "disturbed")
+seed2023 <- filter(seed2023, ending.weight != "broken")
+seed2023 <- filter(seed2023, ending.weight != "was never put out")
+
+seed2023 <- select(seed2023, 1:7)
+
+seed2024 <- read.csv("Raw Data/seedsrates2024.csv")
+seed2024 <- filter(seed2024, ending.weight != "disturbed")
+seed2024 <- filter(seed2024, ending.weight != "not put out" & ending.weight != "never put out")
+
+
+seeds <- rbind(seed2023, seed2024)
+seeds$ending.weight <- as.numeric(seeds$ending.weight)
+
+seedspring <- filter(seeds, Visit == "Spring")
+
+
+unique(seeds$Size)
+seeds$Size <- gsub(" ", "", seeds$Size)
+seeds$Size <- gsub("medium", "med", seeds$Size)
+seeds$Year <- as.factor(seeds$Year)
+
+ggplot(seeds, aes(Size, ending.weight)) + geom_boxplot()
+
+ggplot(seeds, aes(Microsite, ending.weight)) + geom_boxplot()
+
+ggplot(seeds, aes(as.factor(Year), ending.weight, color = Visit)) + geom_boxplot()
+
+ggplot(seeds, aes(Site, ending.weight, color = Visit)) + geom_boxplot()
+
+library(glmmTMB)
+library(emmeans)
+m1 <- glmmTMB(ending.weight ~ Microsite  + Visit + Size + (1|Site) + (1|Year), data = seeds)
+summary(m1)
+car::Anova(m1)
+
+m1 <- glmmTMB(ending.weight ~ Microsite  + Size + (1|Site) + (1|Year), data = seedspring)
+summary(m1)
+car::Anova(m1)
+
+emmeans(m1, pairwise ~ Size)
+shapiro.test(resid(m1))
+plot(resid(m1))
+
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
