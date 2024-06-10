@@ -23,22 +23,34 @@ seed2023 <- select(seed2023, 1:7)
 seed2024 <- read.csv("Raw Data/seedsrates2024.csv")
 seed2024 <- filter(seed2024, ending.weight != "disturbed")
 seed2024 <- filter(seed2024, ending.weight != "not put out" & ending.weight != "never put out")
-
+seed2024$Site <- gsub("yucca", "HOM", seed2024$Site)
 
 seeds <- rbind(seed2023, seed2024)
 seeds$ending.weight <- as.numeric(seeds$ending.weight)
 
-seedspring <- filter(seeds, Visit == "Spring")
+
 
 
 unique(seeds$Size)
 seeds$Size <- gsub(" ", "", seeds$Size)
 seeds$Size <- gsub("medium", "med", seeds$Size)
 seeds$Year <- as.factor(seeds$Year)
+seedspring <- filter(seeds, Visit == "Spring")
+seeds$Site <- gsub(" ", "", seeds$Site)
 
-ggplot(seeds, aes(Size, ending.weight)) + geom_boxplot()
+br <- read.csv("Raw Data/bromesites.csv")
 
-ggplot(seeds, aes(Microsite, ending.weight)) + geom_boxplot()
+seeds <- left_join(seeds, br, by = "Site")
+
+
+
+
+
+ggplot(seeds, aes(Size, ending.weight)) + facet_grid(~ brome) + geom_boxplot() + ylab("Ending weight (g)") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_rect(colour = "black", size=1, fill = NA), axis.line = element_line(colour = "black"))
+
+
+ggplot(seeds, aes(Microsite, ending.weight)) + geom_boxplot() 
 
 ggplot(seeds, aes(as.factor(Year), ending.weight, color = Visit)) + geom_boxplot()
 
@@ -46,11 +58,17 @@ ggplot(seeds, aes(Site, ending.weight, color = Visit)) + geom_boxplot()
 
 library(glmmTMB)
 library(emmeans)
-m1 <- glmmTMB(ending.weight ~ Microsite  + Visit + Size + (1|Site) + (1|Year), data = seeds)
+m1 <- glmmTMB(ending.weight ~  Size *brome + (1|Year) + (1|Site), data = seeds)
+summary(m1)
+car::Anova(m1)
+emmeans(m1, pairwise ~ Size*brome)
+
+m1 <- glmmTMB(ending.weight ~ Microsite +Year  + Visit + Size * brome+ (1|Site), data = seeds)
 summary(m1)
 car::Anova(m1)
 
-m1 <- glmmTMB(ending.weight ~ Microsite  + Size + (1|Site) + (1|Year), data = seedspring)
+
+m1 <- glmmTMB(ending.weight ~ Microsite  + Size * brome+ (1|Site) + (1|Year), data = seedspring)
 summary(m1)
 car::Anova(m1)
 
@@ -60,11 +78,13 @@ plot(resid(m1))
 
 ```
 
-You can add options to executable code like this
+# ants
 
 ```{r}
-#| echo: false
-2 * 2
+arth <- read.csv("Raw Data/pitfall.csv")
+ants <- dplyr::filter(arth, Family == "Formicidae")
+sum(ants$count)
+sp <- ants %>% group_by(Genus, Species) %>% summarize(sum(count))
 ```
 
 The `echo: false` option disables the printing of code (only output is displayed).
