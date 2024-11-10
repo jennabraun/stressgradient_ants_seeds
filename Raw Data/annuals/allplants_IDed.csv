@@ -81,11 +81,11 @@
 2470,2023,28,Yucca,2023-04-17,shrub,NA,Brassica.tournefortii,3
 2476,2023,30,Yucca,2023-04-17,shrub,NA,Brassica.tournefortii,4
 2537,2024,10,Yucca,2024-04-21,shrub,NA,Brassica.tournefortii,3
-1055,2024,4,Cuyama 2,2024-04-30,open,NA,broadcuy2 NA,2
-1063,2024,5,Cuyama 2,2024-04-30,shrub,NA,broadcuy2 NA,1
-1072,2024,5,Cuyama 2,2024-04-30,open,NA,broadcuy2 NA,2
-1293,2024,29,Cuyama 2,2024-04-30,open,NA,broadcuy2 NA,1
-1321,2024,32,Cuyama 2,2024-04-30,open,NA,broadcuy2 NA,5
+1055,2024,4,Cuyama 2,2024-04-30,open,NA,Eremothera.boothi,2
+1063,2024,5,Cuyama 2,2024-04-30,shrub,NA,Eremothera.boothi,1
+1072,2024,5,Cuyama 2,2024-04-30,open,NA,Eremothera.boothi,2
+1293,2024,29,Cuyama 2,2024-04-30,open,NA,Eremothera.boothi,1
+1321,2024,32,Cuyama 2,2024-04-30,open,NA,Eremothera.boothi,5
 354,2023,8,Cuyama 1,2023-04-28,open,NA,Bromus.diandrus,1
 394,2023,15,Cuyama 1,2023-04-28,open,NA,Bromus.diandrus,11
 409,2023,18,Cuyama 1,2023-04-28,shrub,NA,Bromus.diandrus,25
@@ -1834,17 +1834,17 @@
 296,2024,38,Barstow,2024-04-15,shrub,NA,Logfia.depressa,3
 300,2024,38,Barstow,2024-04-15,open,NA,Logfia.depressa,1
 2103,2023,20,Tecopa,2023-04-11,open,,Logfia.depressa,1
-849,2024,18,Cuyama 1,2024-05-01,shrub,NA,Lupinus.sp,1
-1801,2024,12,Sheephole,2024-04-20,open,NA,Lupinus.sp,1
-1857,2024,21,Sheephole,2024-04-20,shrub,NA,Lupinus.sp,1
-1870,2024,23,Sheephole,2024-04-20,open,NA,Lupinus.sp,1
-1873,2024,24,Sheephole,2024-04-20,shrub,NA,Lupinus.sp,1
-1878,2024,25,Sheephole,2024-04-20,shrub,NA,Lupinus.sp,1
-1883,2024,26,Sheephole,2024-04-20,open,NA,Lupinus.sp,3
-1886,2024,27,Sheephole,2024-04-20,open,NA,Lupinus.sp,3
-1893,2024,29,Sheephole,2024-04-20,shrub,NA,Lupinus.sp,6
-2429,2023,18,Yucca,2023-04-17,shrub,NA,Lupinus.sp,5
-2514,2024,6,Yucca,2024-04-21,shrub,NA,Lupinus.sp,3
+849,2024,18,Cuyama 1,2024-05-01,shrub,NA,Lupinus.microcarpus,1
+1801,2024,12,Sheephole,2024-04-20,open,NA,Lupinus.arizonicus,1
+1857,2024,21,Sheephole,2024-04-20,shrub,NA,Lupinus.arizonicus,1
+1870,2024,23,Sheephole,2024-04-20,open,NA,Lupinus.arizonicus,1
+1873,2024,24,Sheephole,2024-04-20,shrub,NA,Lupinus.arizonicus,1
+1878,2024,25,Sheephole,2024-04-20,shrub,NA,Lupinus.arizonicus,1
+1883,2024,26,Sheephole,2024-04-20,open,NA,Lupinus.arizonicus,3
+1886,2024,27,Sheephole,2024-04-20,open,NA,Lupinus.arizonicus,3
+1893,2024,29,Sheephole,2024-04-20,shrub,NA,Lupinus.arizonicus,6
+2429,2023,18,Yucca,2023-04-17,shrub,NA,Lupinus.flavoculatus,5
+2514,2024,6,Yucca,2024-04-21,shrub,NA,Lupinus.flavoculatus,3
 3,2023,1,Barstow,2023-04-15,shrub,NA,Malacothrix.glabrata,1
 28,2023,7,Barstow,2023-04-15,open,NA,Malacothrix.glabrata,2
 31,2023,8,Barstow,2023-04-15,shrub,NA,Malacothrix.glabrata,1
@@ -2700,16 +2700,16 @@
 1909,2024,31,Sheephole,2024-04-20,open,NA,Stephanomeria.exigua,1
 1929,2024,34,Sheephole,2024-04-20,shrub,NA,Stephanomeria.exigua,1
 968,2024,34,Cuyama 1,2024-05-01,shrub,NA,Stipa.pulchra,110
-1745,2024,3,Sheephole,2024-04-20,open,NA,Stylocline.intertexta,2
-1759,2024,5,Sheephole,2024-04-20,open,NA,Stylocline.intertexta,3
-1809,2024,13,Sheephole,2024-04-20,open,NA,Stylocline.intertexta,4
-1845,2024,18,Sheephole,2024-04-20,open,NA,Stylocline.intertexta,7
-1892,2024,29,Sheephole,2024-04-20,shrub,NA,Stylocline.intertexta,1
-1956,2024,38,Sheephole,2024-04-20,open,NA,Stylocline.intertexta,6
-1982,2023,3,Tecopa,2023-04-11,open,,Stylocline.sp,3
-1990,2023,5,Tecopa,2023-04-11,shrub,,Stylocline.sp,1
-2035,2023,11,Tecopa,2023-04-11,shrub,,Stylocline.sp,1
-2212,2024,9,Tecopa,2024-04-16,open,,Stylocline.sp,1
+1745,2024,3,Sheephole,2024-04-20,open,NA,Stylocline.micropoides,2
+1759,2024,5,Sheephole,2024-04-20,open,NA,Stylocline.micropoides,3
+1809,2024,13,Sheephole,2024-04-20,open,NA,Stylocline.micropoides,4
+1845,2024,18,Sheephole,2024-04-20,open,NA,Stylocline.micropoides,7
+1892,2024,29,Sheephole,2024-04-20,shrub,NA,Stylocline.micropoides,1
+1956,2024,38,Sheephole,2024-04-20,open,NA,Stylocline.micropoides,6
+1982,2023,3,Tecopa,2023-04-11,open,,Stylocline.micropoides,3
+1990,2023,5,Tecopa,2023-04-11,shrub,,Stylocline.micropoides,1
+2035,2023,11,Tecopa,2023-04-11,shrub,,Stylocline.micropoides,1
+2212,2024,9,Tecopa,2024-04-16,open,,Stylocline.micropoides,1
 2344,2023,2,Yucca,2023-04-17,open,NA,Eriogonum.trichopes,1
 2365,2023,6,Yucca,2023-04-17,open,NA,Eriogonum.trichopes,1
 2400,2023,13,Yucca,2023-04-17,shrub,NA,Eriogonum.trichopes,1

@@ -73,4 +73,9 @@ allplants <- rbind(barstow, cuyamas, heartofmojave, sheephole, tecopa, yucca)
 allplants <- allplants %>% drop_na(abun)
 
 write.csv(allplants, "Raw Data/annuals/allplants.csv")
-                  
+
+
+all <- read.csv("Raw Data/annuals/allplants_IDed.csv")
+uniq <- all %>% select(species) %>% unique()                 
+
+write.csv(uniq, "Clean Data/annuallist.csv")
