@@ -6,6 +6,7 @@ editor: visual
 ```{r}
 library(dplyr)
 library(ggplot2)
+library(tidyr)
 ```
 
 
@@ -81,10 +82,71 @@ plot(resid(m1))
 # ants
 
 ```{r}
-arth <- read.csv("Raw Data/pitfall.csv")
-ants <- dplyr::filter(arth, Family == "Formicidae")
+arth2 <- read.csv("Raw Data/pitfall_arth.csv")
+ants <- dplyr::filter(arth2, Family == "Formicidae")
 sum(ants$count)
 sp <- ants %>% group_by(Genus, Species) %>% summarize(sum(count))
+
+write.csv(ants, "Raw Data/ants_only.csv")
+
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+## Annuals
+
+```{r}
+
+plts <- read.csv("Raw Data/annuals/allplants_IDed.csv")
+plts <- select(plts, -X)
+plts <- select(plts, -6)
+str(plts)
+
+ <- distinct(plts)
+
+dup <-plts %>%
+  dplyr::group_by(Year.NA, Rep.NA, Site, Date, Microsite, species) %>%
+  dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+  dplyr::filter(n > 1L)
+plt_wide <- plts %>% pivot_wider(names_from = species, values_from = abun)
+
+
+
+unique(plt_wide$Year.NA)
+unique(plt_wide$Rep.NA)
+unique(plt_wide$Site)
+unique(plt_wide$Microsite)
+
+plt_wide$uniID <- paste(plt_wide$Site, plt_wide$Year.NA, plt_wide$Microsite, plt_wide$Rep.NA)
+plt_wide$uniID <- gsub(" ", "", plt_wide$uniID)
+
+plt_wide[is.na(plt_wide)] <- 0
+
+
+env <- select(plt_wide, 1:5, uniID)
+comm <- select(plt_wide, 6:91)
+
+
+library(vegan)
+richness <- specnumber(comm)
+abun <- rowSums(comm)
+
+env$rich <- richness
+env$abun <- abun
+
+#import plant metadata for zero rows
+reps <- read.csv("Raw Data/reps.csv")
+reps <- filter(reps, season == "spring")
+reps$uniID <- paste(reps$Site, reps$year, reps$Microsite, reps$Rep)
+reps$uniID <- gsub(" ", "", reps$uniID)
+plt.ag <- left_join(reps, env, by = "uniID")
+
+plt.ag$rich[is.na(plt.ag$rich)] <- 0
+plt.ag$abun[is.na(plt.ag$abun)] <- 0
+
+```
+
+## Simple plant viz
+```{r}
+
+ggplot(plt.ag, aes(Site.x, abun, fill = Microsite.x)) + geom_boxplot()
+ggplot(plt.ag, aes(Site.x, rich, fill = Microsite.x, color = as.factor(year))) + geom_boxplot()
+```
