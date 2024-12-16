@@ -47,7 +47,7 @@ seeds <- left_join(seeds, br, by = "Site")
 
 
 
-ggplot(seeds, aes(Size, ending.weight)) + facet_grid(~ brome) + geom_boxplot() + ylab("Ending weight (g)") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+ggplot(seeds, aes(Size, ending.weight)) + facet_grid(~ brome.x) + geom_boxplot() + ylab("Ending weight (g)") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
 panel.background = element_rect(colour = "black", size=1, fill = NA), axis.line = element_line(colour = "black"))
 
 
@@ -59,12 +59,12 @@ ggplot(seeds, aes(Site, ending.weight, color = Visit)) + geom_boxplot()
 
 library(glmmTMB)
 library(emmeans)
-m1 <- glmmTMB(ending.weight ~  Size *brome + (1|Year) + (1|Site), data = seeds)
+m1 <- glmmTMB(ending.weight ~  Size *brome.x  + (1|Site), data = seeds)
 summary(m1)
 car::Anova(m1)
-emmeans(m1, pairwise ~ Size*brome)
+emmeans(m1, pairwise ~ Size|brome.x)
 
-m1 <- glmmTMB(ending.weight ~ Microsite +Year  + Visit + Size * brome+ (1|Site), data = seeds)
+m1 <- glmmTMB(ending.weight ~ Microsite +Year  + Visit + Size * brome.x+ (1|Site), data = seeds)
 summary(m1)
 car::Anova(m1)
 
@@ -91,6 +91,15 @@ write.csv(ants, "Raw Data/ants_only.csv")
 
 ```
 
+
+```{r}
+
+bar <- filter(ants, site == "Barstow")
+
+
+```
+
+
 ## Annuals
 
 ```{r}
@@ -100,12 +109,8 @@ plts <- select(plts, -X)
 plts <- select(plts, -6)
 str(plts)
 
- <- distinct(plts)
 
-dup <-plts %>%
-  dplyr::group_by(Year.NA, Rep.NA, Site, Date, Microsite, species) %>%
-  dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
-  dplyr::filter(n > 1L)
+
 plt_wide <- plts %>% pivot_wider(names_from = species, values_from = abun)
 
 
@@ -142,6 +147,11 @@ plt.ag <- left_join(reps, env, by = "uniID")
 plt.ag$rich[is.na(plt.ag$rich)] <- 0
 plt.ag$abun[is.na(plt.ag$abun)] <- 0
 
+
+m1 <- glmmTMB(rich ~ Microsite.x * Site.x, family = "poisson", data = plt.ag)
+summary(m1)
+emmeans(Microsite.x~Site.x, m1)
+emmeans(m1, pairwise ~ Microsite.x*Site.x)
 ```
 
 ## Simple plant viz
