@@ -95,7 +95,7 @@ write.csv(ants, "Raw Data/ants_only.csv")
 ```{r}
 
 bar <- filter(ants, site == "Barstow")
-
+hom <- filter(ants, site == "HOM")
 
 ```
 
