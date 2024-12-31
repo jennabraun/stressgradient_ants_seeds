@@ -10,6 +10,22 @@ library(tidyr)
 ```
 
 
+## Site information
+```{r}
+library(sf)
+library(raster)
+sites <- read.csv("Raw Data/sites.csv")
+sites <- st_as_sf(sites, coords=c("Long","Lat"), crs=4326)
+plot(sites)
+st_write(sites, "studysites.shp")
+
+#read in bioclim data from other repo
+env <- terra::rast("F:/CH2_ant-plant_mutualism_synthesis/na_rasters.grd")
+summary(env)
+
+climsites <- terra::extract(env, sites)
+sites <- cbind(climsites, sites)
+```
 ## Seeds
 
 ```{r}
