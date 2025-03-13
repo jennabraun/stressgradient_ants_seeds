@@ -1,0 +1,71 @@
+# Set seed for reproducibility
+set.seed(123)
+
+# Define the range of sample sizes to test
+sample_sizes <- seq(50, 300, by = 25) # Test from 50 to 300 in steps of 25
+
+# Create an empty data frame to store the results
+results_df <- data.frame(Sample_Size = numeric(), P_Value_RDM_Biomass = numeric())
+
+# Loop through each sample size
+for (n_test in sample_sizes) {
+  # Simulate Shrub microsite
+  shrub_microsite <- factor(sample(c("shrub", "open"), n_test, replace = TRUE))
+  
+  # Simulate RDM biomass
+  rdm_biomass <- round(runif(n_test, 0, 15), 2)
+  
+  # Simulate RDM cover
+  rdm_cover <- sample(0:100, n_test, replace = TRUE)
+  
+  # Define the coefficients (RDM biomass coefficient back to original)
+  intercept <- 4.5  # Need to estimate the intercept
+  coef_shrub <- 0.177
+  coef_rdm_biomass <- -0.004 # Original coefficient
+  coef_rdm_cover <- 0.0003
+  
+  # Calculate the linear predictor
+  linear_predictor <- intercept +
+    ifelse(shrub_microsite == "shrub", coef_shrub, 0) +
+    coef_rdm_biomass * rdm_biomass +
+    coef_rdm_cover * rdm_cover
+  
+  # Calculate the expected mean (lambda) on the original scale
+  expected_mean <- exp(linear_predictor)
+  
+  # Simulate species richness using a Poisson distribution
+  species_richness <- rpois(n_test, lambda = expected_mean)
+  
+  # Ensure species richness is within the observed range
+  species_richness[species_richness > 159] <- 159
+  
+  # Create the data frame
+  simulated_data_test <- data.frame(
+    Shrub_microsite = shrub_microsite,
+    RDM_biomass = rdm_biomass,
+    RDM_cover = rdm_cover,
+    Species_richness = species_richness
+  )
+  
+  # Fit the generalized linear model
+  model_test <- glm(Species_richness ~ Shrub_microsite + RDM_biomass + RDM_cover,
+                    data = simulated_data_test, family = poisson)
+  
+  # Extract the p-value for RDM biomass
+  p_value_rdm <- summary(model_test)$coefficients["RDM_biomass", "Pr(>|z|)"]
+  
+  # Add the results to the data frame
+  results_df <- rbind(results_df, data.frame(Sample_Size = n_test, P_Value_RDM_Biomass = p_value_rdm))
+}
+
+# Print the results data frame
+print(results_df)
+
+# --- Optional: Create a plot of p-value vs. sample size ---
+plot(results_df$Sample_Size, results_df$P_Value_RDM_Biomass,
+     type = "b", # "b" for both points and lines
+     xlab = "Sample Size",
+     ylab = "P-value for RDM Biomass",
+     main = "P-value of RDM Biomass vs. Sample Size",
+     abline(h = 0.05, col = "red", lty = 2) # Add a horizontal line at significance level 0.05
+)

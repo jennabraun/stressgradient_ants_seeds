@@ -1,0 +1,163 @@
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(lme4) # For mixed-effects models
+library(MuMIn) # For model selection (AICc)
+library(performance) # For checking model assumptions
+
+# 1. Data Import and Initial Exploration
+data <- read.csv("F:/archive projects/rdm.gradient/clean_data/cov.csv", header = TRUE)
+
+# Inspect the data
+str(data)
+head(data)
+summary(data)
+
+# Check for missing values
+colSums(is.na(data))
+
+# 2. Data Cleaning and Preprocessing
+# Convert Microsite to a factor
+data$Microsite <- as.factor(data$Microsite)
+
+# Handle missing RDM for open microsites - keep as NA or replace with 0 (with caution)
+# For this workflow, we'll keep them as NA for now
+
+# 3. Exploratory Data Analysis (EDA)
+# Visualize distributions of response variables
+hist(data$abun, main = "Distribution of Insect Abundance")
+plot(density(data$abun), main = "Density of Insect Abundance")
+
+hist(data$Species, main = "Distribution of Species Richness")
+plot(density(data$Species), main = "Density of Species Richness")
+
+# Visualize distributions of predictor variables
+hist(data$RDM, main = "Distribution of RDM")
+plot(density(data$RDM, na.rm = TRUE), main = "Density of RDM")
+
+hist(data$rdm.cov, main = "Distribution of RDM Cover")
+plot(density(data$rdm.cov, na.rm = TRUE), main = "Density of RDM Cover")
+
+# Compare distributions across Microsite levels
+boxplot(abun ~ Microsite, data = data, main = "Abundance by Microsite")
+boxplot(Species ~ Microsite, data = data, main = "Species Richness by Microsite")
+
+# Examine relationships
+plot(data$RDM, data$abun, main = "Abundance vs. RDM")
+plot(data$rdm.cov, data$abun, main = "Abundance vs. RDM Cover")
+plot(data$RDM, data$Species, main = "Species Richness vs. RDM")
+plot(data$rdm.cov, data$Species, main = "Species Richness vs. RDM Cover")
+
+# Check for outliers (visual inspection of plots)
+
+# Assess collinearity
+cor(data$RDM, data$rdm.cov, use = "complete.obs")
+
+# 4. Statistical Modeling (Mixed-Effects Models)
+
+# Model 1: Influence of Microsite (with random effect of Site)
+model_abun_microsite_me <- glmer(abun ~ Microsite + (1|site), data = data, family = poisson())
+summary(model_abun_microsite_me)
+# Check model assumptions (residuals)
+plot(resid(model_abun_microsite_me) ~ fitted(model_abun_microsite_me))
+qqnorm(resid(model_abun_microsite_me))
+qqline(resid(model_abun_microsite_me))
+performance::check_overdispersion(model_abun_microsite_me) # Check for overdispersion
+
+model_species_microsite_me <- glmer(Species ~ Microsite + (1|site), data = data, family = poisson())
+summary(model_species_microsite_me)
+plot(resid(model_species_microsite_me) ~ fitted(model_species_microsite_me))
+qqnorm(resid(model_species_microsite_me))
+qqline(resid(model_species_microsite_me))
+performance::check_overdispersion(model_species_microsite_me)
+
+# If overdispersion is present, consider negative binomial family
+# Example (using glmer.nb from lme4.0):
+model_abun_microsite_me_nb <- glmer.nb(abun ~ Microsite + (1|site), data = data)
+summary(model_abun_microsite_me_nb)
+
+# Model 2: Influence of Continuous Vegetation Variables (with random effect of Site)
+model_abun_rdm_me <- glmer(abun ~ RDM + (1|site), data = data, family = poisson())
+summary(model_abun_rdm_me)
+
+model_abun_rdmcov_me <- glmer(abun ~ rdm.cov + (1|site), data = data, family = poisson())
+summary(model_abun_rdmcov_me)
+
+model_species_rdm_me <- glmer(Species ~ RDM + (1|site), data = data, family = poisson())
+summary(model_species_rdm_me)
+
+model_species_rdmcov_me <- glmer(Species ~ rdm.cov + (1|site), data = data, family = poisson())
+summary(model_species_rdmcov_me)
+
+# Model 3: Combined Influence (with random effect of Site)
+model_abun_combined_me <- glmer(abun ~ Microsite + RDM + (1|site), data = data, family = poisson())
+summary(model_abun_combined_me)
+
+model_species_combined_me <- glmer(Species ~ Microsite + rdm.cov + (1|site), data = data, family = poisson())
+summary(model_species_combined_me)
+
+# Model 4: Interactions (with random effect of Site)
+model_abun_interaction_me <- glmer(abun ~ Microsite * RDM + (1|site), data = data, family = poisson())
+summary(model_abun_interaction_me)
+
+model_species_interaction_me <- glmer(Species ~ Microsite * rdm.cov + (1|site), data = data, family = poisson())
+summary(model_species_interaction_me)
+
+# 5. Model Evaluation and Selection
+
+# Create a list of models to compare for abundance
+abun_models <- list(
+  model_abun_microsite_me = model_abun_microsite_me,
+  model_abun_rdm_me = model_abun_rdm_me,
+  model_abun_rdmcov_me = model_abun_rdmcov_me,
+  model_abun_combined_me = model_abun_combined_me,
+  model_abun_interaction_me = model_abun_interaction_me
+)
+
+
+
+
+# Use AICc for model selection (appropriate for smaller datasets)
+abun_aic_table <- AICc(abun_models)
+print("AICc table for Abundance models:")
+print(abun_aic_table)
+
+# Create a list of models to compare for species richness
+species_models <- list(
+  model_species_microsite_me = model_species_microsite_me,
+  model_species_rdm_me = model_species_rdm_me,
+  model_species_rdmcov_me = model_species_rdmcov_me,
+  model_species_combined_me = model_species_combined_me,
+  model_species_interaction_me = model_species_interaction_me
+)
+
+# Use AICc for model selection
+species_aic_table <- AICc(species_models)
+print("AICc table for Species Richness models:")
+print(species_aic_table)
+
+# 6. Interpretation and Conclusion
+# Interpret the coefficients of the best model(s) based on AICc
+# Example interpretation for the best abundance model:
+# summary(best_abun_model) # Replace with the actual best model name
+# exp(coef(best_abun_model)) # Exponentiate coefficients for count data
+
+# Visualize model predictions (example for Microsite)
+predicted_abun <- expand.grid(Microsite = levels(data$Microsite))
+predicted_abun$predicted <- predict(model_abun_microsite_me, newdata = predicted_abun, type = "response", re.form = NA) # re.form = NA for population-level predictions
+
+ggplot(predicted_abun, aes(x = Microsite, y = predicted)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Predicted Abundance by Microsite", y = "Predicted Abundance")
+
+# Visualize model predictions (example for RDM)
+new_data_rdm <- data.frame(RDM = seq(min(data$RDM, na.rm = TRUE), max(data$RDM, na.rm = TRUE), length.out = 100))
+new_data_rdm$predicted <- predict(model_abun_rdm_me, newdata = new_data_rdm, type = "response", re.form = NA)
+
+ggplot(new_data_rdm, aes(x = RDM, y = predicted)) +
+  geom_line() +
+  labs(title = "Predicted Abundance vs. RDM", y = "Predicted Abundance")
+
+# Draw conclusions based on the best models and their interpretations
+
+# Acknowledge limitations

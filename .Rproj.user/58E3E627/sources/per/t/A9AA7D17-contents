@@ -103,7 +103,7 @@ ants <- dplyr::filter(arth2, Family == "Formicidae")
 sum(ants$count)
 sp <- ants %>% group_by(Genus, Species) %>% summarize(sum(count))
 
-write.csv(ants, "Raw Data/ants_only.csv")
+write.csv(ants, "clean Data/ants_only.csv")
 
 ```
 
