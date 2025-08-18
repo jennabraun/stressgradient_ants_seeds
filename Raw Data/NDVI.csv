@@ -1,0 +1,22 @@
+Site,Season,Year,CRS,brome,NDVI20231,NDVI20241
+Tecopa,spring,2023,EPSG 4326,nobrome,1528,
+Tecopa,summer,2023,EPSG 4326,nobrome,1528,
+Tecopa,spring,2024,EPSG 4326,nobrome,,1473
+Yucca,spring,2023,EPSG 4326,brome,2808,
+Yucca,summer,2023,EPSG 4326,brome,2808,
+Yucca,spring,2024,EPSG 4326,brome,,3756
+HOM,spring,2023,EPSG 4326,nobrome,1460,
+HOM,summer,2023,EPSG 4326,nobrome,1460,
+HOM,spring,2024,EPSG 4326,nobrome,,2399
+Sheephole,spring,2024,EPSG 4326,nobrome,,1332
+Sheephole,spring,2023,EPSG 4326,nobrome,1060,
+Sheephole,summer,2023,EPSG 4326,nobrome,1060,
+Barstow,spring,2023,EPSG 4326,nobrome,1315,
+Barstow,summer,2023,EPSG 4326,nobrome,1315,
+Barstow,spring,2024,EPSG 4326,nobrome,,1518
+Cuyama 1,spring,2023,EPSG 4326,brome,3989,
+Cuyama 1,summer,2023,EPSG 4326,brome,3989,
+Cuyama 1,spring,2024,EPSG 4326,brome,,3879
+Cuyama 2,spring,2023,EPSG 4326,brome,5950,
+Cuyama 2,summer,2023,EPSG 4326,brome,5950,
+Cuyama 2,spring,2024,EPSG 4326,brome,,4086

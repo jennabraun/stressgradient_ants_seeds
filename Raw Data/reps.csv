@@ -119,22 +119,22 @@ year,Rep,Site,season,Date,Microsite,Pit,,shrub species
 2023,29,Barstow,spring,2023-04-15,open,y,,
 2023,30,Barstow,spring,2023-04-15,shrub,y,,
 2023,30,Barstow,spring,2023-04-15,open,y,,
-2023,1,Cuyama 1,spring,2023-04-28,shrub,s,,
-2023,1,Cuyama 1,spring,2023-04-28,open,s,,
-2023,2,Cuyama 1,spring,2023-04-28,shrub,m,,
-2023,2,Cuyama 1,spring,2023-04-28,open,m,,
-2023,3,Cuyama 1,spring,2023-04-28,shrub,l,,
-2023,3,Cuyama 1,spring,2023-04-28,open,l,,
+2023,1,Cuyama 1,spring,2023-04-28,shrub,,,
+2023,1,Cuyama 1,spring,2023-04-28,open,,,
+2023,2,Cuyama 1,spring,2023-04-28,shrub,,,
+2023,2,Cuyama 1,spring,2023-04-28,open,,,
+2023,3,Cuyama 1,spring,2023-04-28,shrub,,,
+2023,3,Cuyama 1,spring,2023-04-28,open,,,
 2023,4,Cuyama 1,spring,2023-04-28,shrub,y,,
 2023,4,Cuyama 1,spring,2023-04-28,open,y,,
 2023,5,Cuyama 1,spring,2023-04-28,shrub,y,,
 2023,5,Cuyama 1,spring,2023-04-28,open,y,,
-2023,6,Cuyama 1,spring,2023-04-28,shrub,m,,
-2023,6,Cuyama 1,spring,2023-04-28,open,m,,
-2023,7,Cuyama 1,spring,2023-04-28,shrub,s,,
-2023,7,Cuyama 1,spring,2023-04-28,open,s,,
-2023,8,Cuyama 1,spring,2023-04-28,shrub,l,,
-2023,8,Cuyama 1,spring,2023-04-28,open,l,,
+2023,6,Cuyama 1,spring,2023-04-28,shrub,,,
+2023,6,Cuyama 1,spring,2023-04-28,open,,,
+2023,7,Cuyama 1,spring,2023-04-28,shrub,,,
+2023,7,Cuyama 1,spring,2023-04-28,open,,,
+2023,8,Cuyama 1,spring,2023-04-28,shrub,,,
+2023,8,Cuyama 1,spring,2023-04-28,open,,,
 2023,9,Cuyama 1,spring,2023-04-28,shrub,y,,
 2023,9,Cuyama 1,spring,2023-04-28,open,y,,
 2023,10,Cuyama 1,spring,2023-04-28,shrub,y,,
@@ -239,62 +239,62 @@ year,Rep,Site,season,Date,Microsite,Pit,,shrub species
 2023,29,Cuyama 2,spring,2023-04-28,open,y,,
 2023,30,Cuyama 2,spring,2023-04-28,shrub,y,,
 2023,30,Cuyama 2,spring,2023-04-28,open,y,,
-2023,1,Sheephole,spring,2023-04-20,shrub,s,,EC
-2023,1,Sheephole,spring,2023-04-20,open,s,,
-2023,2,Sheephole,spring,2023-04-20,shrub,m,,LT
-2023,2,Sheephole,spring,2023-04-20,open,m,,
-2023,3,Sheephole,spring,2023-04-20,shrub,l,,EC
-2023,3,Sheephole,spring,2023-04-20,open,l,,
+2023,1,Sheephole,spring,2023-04-20,shrub,,,EC
+2023,1,Sheephole,spring,2023-04-20,open,,,
+2023,2,Sheephole,spring,2023-04-20,shrub,,,LT
+2023,2,Sheephole,spring,2023-04-20,open,,,
+2023,3,Sheephole,spring,2023-04-20,shrub,,,EC
+2023,3,Sheephole,spring,2023-04-20,open,,,
 2023,4,Sheephole,spring,2023-04-20,shrub,y,,LT
 2023,4,Sheephole,spring,2023-04-20,open,y,,
 2023,5,Sheephole,spring,2023-04-20,shrub,y,,EC
 2023,5,Sheephole,spring,2023-04-20,open,y,,
-2023,6,Sheephole,spring,2023-04-20,shrub,s,,LT
-2023,6,Sheephole,spring,2023-04-20,open,s,,
-2023,7,Sheephole,spring,2023-04-20,shrub,m,,EC
-2023,7,Sheephole,spring,2023-04-20,open,m,,
-2023,8,Sheephole,spring,2023-04-20,shrub,l,,LT
-2023,8,Sheephole,spring,2023-04-20,open,l,,
+2023,6,Sheephole,spring,2023-04-20,shrub,,,LT
+2023,6,Sheephole,spring,2023-04-20,open,,,
+2023,7,Sheephole,spring,2023-04-20,shrub,,,EC
+2023,7,Sheephole,spring,2023-04-20,open,,,
+2023,8,Sheephole,spring,2023-04-20,shrub,,,LT
+2023,8,Sheephole,spring,2023-04-20,open,,,
 2023,9,Sheephole,spring,2023-04-20,shrub,y,,EC
 2023,9,Sheephole,spring,2023-04-20,open,y,,
 2023,10,Sheephole,spring,2023-04-20,shrub,y,,LT
 2023,10,Sheephole,spring,2023-04-20,open,y,,
-2023,11,Sheephole,spring,2023-04-20,shrub,s,,EC
-2023,11,Sheephole,spring,2023-04-20,open,s,,
-2023,12,Sheephole,spring,2023-04-20,shrub,m,,LT
-2023,12,Sheephole,spring,2023-04-20,open,m,,
-2023,13,Sheephole,spring,2023-04-20,shrub,l,,EC
-2023,13,Sheephole,spring,2023-04-20,open,l,,
+2023,11,Sheephole,spring,2023-04-20,shrub,,,EC
+2023,11,Sheephole,spring,2023-04-20,open,,,
+2023,12,Sheephole,spring,2023-04-20,shrub,,,LT
+2023,12,Sheephole,spring,2023-04-20,open,,,
+2023,13,Sheephole,spring,2023-04-20,shrub,,,EC
+2023,13,Sheephole,spring,2023-04-20,open,,,
 2023,14,Sheephole,spring,2023-04-20,shrub,y,,LT
 2023,14,Sheephole,spring,2023-04-20,open,y,,
 2023,15,Sheephole,spring,2023-04-20,shrub,y,,EC
 2023,15,Sheephole,spring,2023-04-20,open,y,,
-2023,16,Sheephole,spring,2023-04-20,shrub,s,,EC
-2023,16,Sheephole,spring,2023-04-20,open,s,,
-2023,17,Sheephole,spring,2023-04-20,shrub,m,,LT
-2023,17,Sheephole,spring,2023-04-20,open,m,,
-2023,18,Sheephole,spring,2023-04-20,shrub,l,,EC
-2023,18,Sheephole,spring,2023-04-20,open,l,,
+2023,16,Sheephole,spring,2023-04-20,shrub,,,EC
+2023,16,Sheephole,spring,2023-04-20,open,,,
+2023,17,Sheephole,spring,2023-04-20,shrub,,,LT
+2023,17,Sheephole,spring,2023-04-20,open,,,
+2023,18,Sheephole,spring,2023-04-20,shrub,,,EC
+2023,18,Sheephole,spring,2023-04-20,open,,,
 2023,19,Sheephole,spring,2023-04-20,shrub,y,,LT
 2023,19,Sheephole,spring,2023-04-20,open,y,,
 2023,20,Sheephole,spring,2023-04-20,shrub,y,,EC
 2023,20,Sheephole,spring,2023-04-20,open,y,,
-2023,21,Sheephole,spring,2023-04-20,shrub,s,,LT
-2023,21,Sheephole,spring,2023-04-20,open,s,,
-2023,22,Sheephole,spring,2023-04-20,shrub,l,,EC
-2023,22,Sheephole,spring,2023-04-20,open,l,,
-2023,23,Sheephole,spring,2023-04-20,shrub,m,,LT
-2023,23,Sheephole,spring,2023-04-20,open,m,,
+2023,21,Sheephole,spring,2023-04-20,shrub,,,LT
+2023,21,Sheephole,spring,2023-04-20,open,,,
+2023,22,Sheephole,spring,2023-04-20,shrub,,,EC
+2023,22,Sheephole,spring,2023-04-20,open,,,
+2023,23,Sheephole,spring,2023-04-20,shrub,,,LT
+2023,23,Sheephole,spring,2023-04-20,open,,,
 2023,24,Sheephole,spring,2023-04-20,shrub,y,,LT
 2023,24,Sheephole,spring,2023-04-20,open,y,,
 2023,25,Sheephole,spring,2023-04-20,shrub,y,,EC
 2023,25,Sheephole,spring,2023-04-20,open,y,,
-2023,26,Sheephole,spring,2023-04-20,shrub,s,,LT
-2023,26,Sheephole,spring,2023-04-20,open,s,,
-2023,27,Sheephole,spring,2023-04-20,shrub,l,,EC
-2023,27,Sheephole,spring,2023-04-20,open,l,,
-2023,28,Sheephole,spring,2023-04-20,shrub,m,,LT
-2023,28,Sheephole,spring,2023-04-20,open,m,,
+2023,26,Sheephole,spring,2023-04-20,shrub,,,LT
+2023,26,Sheephole,spring,2023-04-20,open,,,
+2023,27,Sheephole,spring,2023-04-20,shrub,,,EC
+2023,27,Sheephole,spring,2023-04-20,open,,,
+2023,28,Sheephole,spring,2023-04-20,shrub,,,LT
+2023,28,Sheephole,spring,2023-04-20,open,,,
 2023,29,Sheephole,spring,2023-04-20,shrub,y,,EC
 2023,29,Sheephole,spring,2023-04-20,open,y,,
 2023,30,Sheephole,spring,2023-04-20,shrub,y,,LT
