@@ -1003,7 +1003,14 @@ ggplot(site.env, aes(arid, mn.abun.ants)) + geom_smooth(method = "lm")
 
 ```
 
+```{r}
 
+group_by(prov, prov) %>% count()
+
+sum(prov.ag$invasive)
+sum(prov.ag$native)
+
+```
 
 ## Plant Models
 
@@ -1012,25 +1019,29 @@ ggplot(site.env, aes(arid, mn.abun.ants)) + geom_smooth(method = "lm")
 m11 <- glmmTMB(rich ~  arid + Microsite.x + (1|Site) + (1|Year), family = "poisson", plt.ag)
 summary(m11)
 #adding a random effect for year doesn't improve
-m1 <- glmmTMB(rich ~  arid + Microsite.x + (1|Site), family = poisson(), plt.ag)
+m1 <- glmmTMB(rich ~  arid + Microsite.x + (1|Site) + (1|Year), family = poisson(), plt.ag)
 
 #adding ndvi does not improve
-m2 <- glmmTMB(rich ~  arid + Microsite.x + ndvi + (1|Site), family = poisson(), plt.ag)
+m2 <- glmmTMB(rich ~  arid * Microsite.x + ndvi + (1|Site), family = poisson(), plt.ag)
 summary(m2)
 AIC(m1, m2)
 
+AIC(m2, m1.int)
+anova(m2, m1.int)
 
 #adding the interaction does improve a lot
 m1.int <- glmmTMB(rich ~  arid * Microsite.x + (1|Site), family = "poisson", plt.ag)
+summary(m1.int)
 
-
-AIC(m1, m1.int)
-
+m1.int2 <- glmmTMB(rich ~  arid * Microsite.x + ndvi + (1|Site), family = "poisson", plt.ag)
+summary(m1.int)
+AIC(m1.int, m1.int2)
+BIC(m1.int, m1.int2)
 summary(m1.int)
 car::Anova(m1.int)
 
 
-em <- emtrends(m1.int, "Microsite.x", var = "arid")
+em <- emtrends(m1.int, "Microsite.x", var = "ndvi")
 pairs(em)
 summary(em)
 test(em)
@@ -1038,31 +1049,14 @@ plot(em)
 
 ggplot(plt.ag, aes(arid, rich, fill = Microsite.x)) + geom_smooth(method = "lm")
 
+ggplot(plt.ag, aes(Microsite.x, rich)) + geom_boxplot()
+
+
+# native richness only
 
 
 
 
-m1.int <- glmmTMB(rich ~  total_precip_inches * Microsite.x + (1|Site), family = "poisson", plt.ag)
-check_overdispersion(m1.int)
-summary(m1.int)
-car::Anova(m1.int)
-
-em <- emtrends(m1.int, "Microsite.x", var = "total_precip_inches")
-pairs(em)
-summary(em)
-test(em)
-
-
-ggplot(plt.ag, aes(total_precip_inches, rich, fill = Microsite.x)) + geom_smooth(method = "lm")
-
-
-
-
-
-
-m2 <- glmmTMB(rich ~  MAT.x  + total_precip_inches * Microsite.x +(1|Site), family = "poisson", plt.ag)
-summary(m2)
-glmm.hp(m2)
 ```
 
 ### Annual Abundance
@@ -1077,65 +1071,147 @@ m2.int <- glmmTMB(abun ~  arid * Microsite.x + (1|Site), family = "nbinom1", plt
 m2.inb <- glmmTMB(abun ~  arid * Microsite.x + (1|Site), family = "nbinom2", plt.ag)
 summary(m2.nb1)
 summary(m2.nb)
+AIC(m2.nb1, m2.nb)
+
 
 m2.int <- glmmTMB(abun ~  arid * Microsite.x + ndvi + (1|Site), family = "nbinom1", plt.ag) 
 summary(m2.int)
-glmm.hp(m2.int)
+m2.int3 <- glmmTMB(abun ~  arid * Microsite.x + ndvi + (1|Site), family = "nbinom2", plt.ag) 
+
+AIC(m2.int, m2.int3)
+
+
+m2.int2 <- glmmTMB(abun ~  arid * Microsite.x + (1|Site), family = "nbinom1", plt.ag) 
+
+AIC(m2.int, m2.int2)
+BIC(m2.int, m2.int2)
+
+
 
 ggplot(plt.ag, aes(arid, abun, fill = Microsite.x)) + geom_smooth(method = "lm")
+
+
+em <- emtrends(m2.int2, "Microsite.x", var = "arid")
+pairs(em)
+summary(em)
+test(em)
+plot(em)
+
+```
+
+```{r}
+
+prov.abun <- pivot_longer(plt.ag, cols = invasive:native, names_to = "prov", values_to = "abun.prov")
+
+
+m2.int <- glmmTMB(abun.prov ~  arid * Microsite.x * prov  + (1|Site), family = "nbinom1", prov.abun)
+m2.int2 <- glmmTMB(abun.prov ~  arid * Microsite.x * prov+ ndvi  + (1|Site), family = "nbinom2", prov.abun)
+
+AIC(m2.int, m2.int2)
+
+
+em <- emtrends(m2.int, ~Microsite.x*prov, var = "arid")
+pairs(em)
+test(em)
+summary(m2.int)
+
+
+em <- emtrends(m2.int, "prov", var = "arid")
+pairs(em)
+summary(em)
+test(em)
+plot(em)
+
+ car::Anova(m2.int)
+
+ggplot(plt.ag, aes(arid, invasive, fill = Microsite.x)) + geom_smooth(method = "lm")
+
+
+AIC(m2.int, m2.int2)
+
+
+m2 <- glmmTMB(invasive ~  arid + Microsite.x + ndvi + (1|Site), family = "nbinom1", plt.ag)
+AIC(m2, m2.int2)
+
+
+m2.int3 <- glmmTMB(invasive ~  arid * Microsite.x + (1|Site), family = "nbinom1", plt.ag)
+summary(m2.int3)
+AIC(m2.int2, m2.int3)
+
+
+summary(m2)
+```
+
+
+```{r}
+m2.int2 <- glmmTMB(native ~  arid * Microsite.x +(1|Site), family = "nbinom1", plt.ag)
+
+summary(m2.int2)
+
+ggplot(plt.ag, aes(arid, native, fill = Microsite.x)) + geom_smooth(method = "lm")
+
+glmm.hp(m2.int2)
+
+
+ggplot(plt.ag, aes(arid, native)) + geom_smooth(method = "lm") + geom_smooth(aes(arid, invasive), method = lm, color = "red") + facet_grid(~Microsite.x)
+
+
+ggplot(plt.ag, aes(arid, invasive, fill = Microsite.x)) + geom_smooth(method = "lm")
 ```
 
 ### Seed size
 
 ```{r}
 
+ggplot(plt.ag, aes(seed.weight, cwm.inv)) + geom_smooth()
 
-m1 <- glmmTMB(log(seed.weight) ~ arid + Microsite.x + gr.webers + ndvi + (1|Site) + (1|Year), plt.ag)
+ggplot(plt.ag, aes(seed.weight, nat.cwm)) + geom_smooth()
 
+ggplot(plt.ag, aes(seed.weight, nat.cwm)) + geom_smooth(method = "lm")
 
-m2 <- glmmTMB(log(seed.weight) ~ arid + Microsite.x + gr.webers + (1|Site) + (1|Year), plt.ag)
+ggplot(plt.ag, aes(cwm.inv, nat.cwm)) + geom_smooth()
 
-AIC(m1, m2)
+ggplot(plt.ag, aes(cwm.inv, nat.cwm)) + geom_smooth(method = "lm")
 
-m3 <- glmmTMB(log(seed.weight) ~ arid + Microsite.x  + (1|Site) + (1|Year), plt.ag)
+cor.test(plt.ag$seed.weight, plt.ag$nat.cwm)
+cor.test(plt.ag$seed.weight, plt.ag$cwm.inv)
 
-summary(m3)
-m4 <- glmmTMB(log(seed.weight) ~ arid * Microsite.x  + (1|Site) + (1|Year), plt.ag)
-
-m5 <- glmmTMB(log(seed.weight) ~ arid:Microsite.x  + gr.webers + ndvi +(1|Site) + (1|Year), plt.ag)
-
-summary(m5)
-
-m5 <- glmmTMB(log(nat.cwm) ~ arid:Microsite.x  + gr.webers + ndvi +(1|Site) + (1|Year), plt.ag)
-
-summary(m5)
+t.test(plt.ag$native, plt.ag$invasive)
 
 
 
 
-ggplot(plt.ag, aes(arid, nat.cwm, fill = Microsite.x)) + geom_smooth(method = "lm")
-
-ggplot(plt.ag, aes(arid, cwm.inv, fill = Microsite.x)) + geom_smooth(method = "lm")
-
-
-
-m5 <- glmmTMB(log(cwm.inv) ~ arid:Microsite.x  + ndvi +(1|Site) + (1|Year), plt.ag)
-
-summary(m5)
-glmm.hp(m5)
-
-e1 <- emtrends(m5, ~ Microsite.x, var = "arid")
-e1
-pairs(e1)
-test(e1)
-
-AIC(m1, m2, m3, m4, m5)
+#native seed weights
+ggplot(plt.ag, aes(arid, log(nat.cwm), fill = Microsite.x)) + geom_smooth(method = "lm")
 
 
 
+m6 <- glmmTMB(log(nat.cwm) ~ arid + Microsite.x  + gr.webers + gr.rmand + ndvi + (1|Site), plt.ag)
+summary(m6)
 
-summary(m2)
-glmm.hp(m5)
+m7 <- glmmTMB(log(nat.cwm) ~ arid + Microsite.x  + gr.webers + (1|Site), plt.ag)
+summary(m7)
+car::Anova(m7)
+
+m7 <- glmmTMB(log(nat.cwm) ~ Microsite.x  + arid + gr.webers + (1|Site), plt.ag)
+summary(m7)
+car::Anova(m7)
+
+
+
+#invasives
+m8 <- glmmTMB(log(cwm.inv) ~ arid + Microsite.x  + gr.webers + (1|Site), plt.ag)
+
+summary(m8)
+
+glmm.hp(m8)
+
+ggplot(plt.ag, aes(arid, log(cwm.inv), fill = Microsite.x)) + geom_smooth(method = "lm")
+
+
+
+
+
 
 re <- simulateResiduals(m1)
 plot(re)
@@ -1149,241 +1225,59 @@ ggplot(plt.ag, aes(arid, log(nat.cwm), fill = Microsite.x)) + geom_smooth(method
 ggplot(plt.ag, aes(arid, log(cwm.inv), fill = Microsite.x)) + geom_smooth(method = "lm")
 
 
-
-
-#inverse gamma doesn't run
-m3 <- glmmTMB(seed.weight ~ arid + Microsite.x + gr.webers + ndvi + (1|Site), family = Gamma(link = "inverse"), plt.ag)
-
-
-
-
-shapiro.test(resid(m1.1))
-m2 <- glmmTMB(seed.weight ~ arid + Microsite.x + gr.webers + ndvi + (1|Site), family = tweedie(link = "log"), plt.ag)
-
-re <- simulateResiduals(m2)
-
-plot(re)
-
-
-m1.g <- glmmTMB(seed.weight ~ arid + Microsite.x + gr.webers + ndvi + (1|Site), family = inverse.gamma(), plt.ag)
-summary(m1.g)
-AIC(m1.g)
-AIC(m1, m1.g)
-
-check_distribution(m1.g)
-
-glmm.hp(m1.g)
-
-
-glmm.hp(m1, commonality = TRUE)
-ggplot(plt.ag, aes(total_precip_inches, seed.weight, fill = Site)) + geom_smooth()
-
-
-ggplot(plt.ag, aes(total_precip_inches, seed.weight, fill = Microsite.x)) + geom_smooth(method = "lm")
-
-
-
-
-ggplot(plt.ag, aes(arid, seed.weight)) + geom_smooth(method = "lm")
-
-m1 <- glmmTMB(native ~ arid  + Microsite.x + (1|Site), family = "nbinom2", plt.ag)
-summary(m1)
-
-m2 <- glmmTMB(invasive ~ arid  + Microsite.x + (1|Site), family = "nbinom2", plt.ag)
-summary(m1)
-
 ```
-
-
-
-
-
-
-
-```{r}
-
-m3 <- glmmTMB(gr.abun ~ cur.arid  * Microsite  + (1|Site), family = "nbinom2", pts)
-
-summary(m3)
-
-
-m1 <- glmmTMB(webers.y ~ arid + cwm.site +(1|Site), filter(sit, season == "spring"))
-
-summary(m1)
-
-m3 <- glmmTMB(webers.y ~ cwm.site + arid  + Microsite  + ndvi + (1|Site) + (1|Year), ptsreps)
-
-summary(m3)
-
-m3 <- glmmTMB(webers.y ~ cwm.site +(1|Site), pts)
-m3 <- glmmTMB(webers.y ~ cwm.site  + arid+ (1|Site), pts)
-summary(m3)
-
-
-interact_plot(m3, cwm.site, ndvi)
-
-check_collinearity(m3)
-
-tst <- pts %>% group_by(year, Site, season, cwm.site, arid, ndvi) %>% summarise(mn.web = mean(webers.y, na.rm = TRUE))
-
-cor.test(tst$cwm.site, tst$mn.web)
-cor.test(tst$cwm.site, tst$arid)
-cor.test(tst$mn.web, tst$arid)
-cor.test(tst$mn.web, tst$ndvi)
-
-car::Anova(m3)
-ggplot(pts, aes(cwm.site, webers.y)) + geom_smooth(method = "lm") + geom_point()
-ggplot(pts, aes(cwm.site, webers.y, fill = Site)) + geom_smooth(method = "lm") + geom_point()
-
-cor.test(pts$cwm.site, pts$webers.y)
-
-library(plotly)
-
-ig <- plot_ly(pts, x = ~arid, y = ~cwm.site, z = ~webers.x, color = ~Site)
-ig
-ggplot(pts, aes(x=arid, y=cwm.site, z=webers.x, color=Site)) + 
-  theme_void() +
-  axes_3D() +
-  stat_3D()
-
-library(scatterplot3d)
-
-s3d <- scatterplot3d(arid, cwm.site, webers.y, data = pts)
-
-varenv <- select(pts, webers.y, arid, ndvi, cwm.site, Site) %>% drop_na()
-
-varp <- varpart(varenv$webers.y, ~varenv$arid, ~varenv$cwm.site, varenv$ndvi)
-
-varp
-
-plot(varp)
-
-rda(varp)
-
-r1 <- rda(varenv$webers.y ~varenv$arid)
-RsquareAdj(r1)
-anova(r1)
-
-r1 <- rda(varenv$webers.y ~varenv$cwm.site)
-RsquareAdj(r1)
-anova(r1)
-
-anova(varp)
-
-
-
-m1 <-  psem(glmmTMB(cwm.site ~ arid  + ndvi + (1|Site), pts),
-  glmmTMB(webers.y ~ arid  + cwm.site +(1|Site), pts))
-summary(m1)
-plot(m1)
-
-
-
-sem <- update(m1, ndvi %~~% arid)
-plot(sem)
-summary(sem)
-
-
-ggplot(pts2, aes(arid, webers.x)) + geom_smooth(method = "lm")
-ggplot(pts2, aes(abun, webers.x)) + geom_smooth(method = "lm")
-
-ggplot(pts2, aes(brome, arid)) + geom_boxplot()
-
-ggplot(pts2, aes(arid, mean.inv)) + geom_smooth(method="lm")
-
-ggplot(pts2, aes(arid, cwm.site.inv)) + geom_smooth()
-
-m2 <- glmmTMB(cwm.site ~ arid + (1|Site), sit)
-sit <- filter(sit, season == "spring")
-summary(m2)
-
-m1 <-  psem(
-  glmmTMB(webers ~ cwm.site + arid  + (1|Site), pts),
-  glmmTMB(cwm.site ~ arid  + webers.y + (1|Site), sit),
-  glmmTMB(webers.y ~ arid  + (1|Site), sit))
-
-m2  <- psem(
-  glmmTMB(webers ~  cwm.site  + MAT + MAP + (1|Site), pts),
-  glmmTMB(cwm.site ~ MAT + MAP +(1|Site), sit))
-
-summary(m2)
-sem <- update(m2, MAT %~~% MAP)
-
-summary(sem)
-plot(sem)
-
-m1 <- glmmTMB(webers ~ arid +(1|Site), pts)
-
-summary(m1)
-
-summary(update(m2), standardize = "scale")
-summary(m2)
-plot(update(m2), standardize = "scale")
-AIC(m1, m2)
-
-summary(modelList)
-anova(m2)
-plot(m2)
-
-
-
-m3 <- multigroup(modelList, group = "Size")
-
-```
-
-
 
 ## Ant Models
+
+### Ant Viz
+```{r}
+
+
+ggplot(pts, aes(ndvi, gr.abun, fill = Microsite)) + geom_smooth(method = "lm")
+ggplot(pts, aes(arid, gr.abun, fill = Microsite)) + geom_smooth(method = "lm")
+
+ggplot(pts, aes(ndvi, gr.richness, fill = Microsite)) + geom_smooth(method = "lm")
+ggplot(pts, aes(arid, gr.richness, fill = Microsite)) + geom_smooth(method = "lm")
+```
+
+
 
 ### Gran Richness
 ```{r}
 
-ptsreps <- ptsreps %>% mutate(arid = MAP/(MAT + 10))
 
 
+m2 <- glmmTMB(gr.richness ~ Microsite +arid + (1|Site), family = "poisson", ptsreps)
 
-cor.test(plt.ag$MAT.x, plt.ag$ndvi)
-cor.test(sites$total_precip_inches, sites$ndvi)
+m3 <- glmmTMB(gr.richness ~ ndvi + Microsite +arid + (1|Site), family = "poisson", ptsreps)
+
+m4 <- glmmTMB(gr.richness ~ ndvi + Microsite +(1|Site), family = "poisson", ptsreps)
 
 
-m2 <- glmmTMB(gr.richness ~ total_precip_inches + Microsite  + (1|Site), family = "poisson", ptsreps)
+AIC(m2, m3, m4)
+
+summary(m3)
+
+m2 <- glmmTMB(gr.richness ~ ndvi +Microsite  * arid + (1|Site), family = "poisson", ptsreps)
 summary(m2)
 
-m2 <- glmmTMB(rich ~ ndvi + Microsite + arid + (1|Site/season), family = "poisson", ptsreps)
-
-summary(m2)
+m3 <- glmmTMB(gr.richness ~ ndvi *Microsite + (1|Site), family = "poisson", ptsreps)
+summary(m3)
 
 
 m3 <- glmmTMB(gr.richness ~ ndvi + Microsite +arid + (1|Site), family = "poisson", ptsreps)
-AIC(m2, m3)
+summary(m3)
+car::Anova(m3)
 
 
+check_collinearity(m3)
 
+check_overdispersion(m3)
 
+performance(m3)
 
-m2 <- glmmTMB(gr.richness ~ Microsite  +  total_precip_inches  + (1|Site), family = "poisson", ptsreps)
-summary(m2)
-
-
-
-m2 <- glmmTMB(gr.richness ~ ndvi +Microsite  + arid + (1|season) + (1|Site), family = "poisson", ptsreps)
-summary(m2)
-
-
-
-m2 <- glmmTMB(gr.richness ~ total_precip_inches +Microsite   + (1|Site), family = "poisson", ptsreps)
-summary(m2)
-
-m2.1 <- glmmTMB(gr.richness ~ arid + Microsite + (1|season)   + (1|Site), family = "poisson", ptsreps)
-
-summary(m2.1)
-
-
-m2.1int <- glmmTMB(rich ~ arid* Microsite   + (1|Site), family = "poisson", ptsreps)
-check_overdispersion(m2.1)
-AIC(m2.1, m2.1int)
-summary(m2.1)
-
+glmm.hp(m3)
+glmm.hp(m3, commonality = TRUE)
 ```
 ### Gran abundance
 
@@ -1391,146 +1285,86 @@ summary(m2.1)
 
 m2.1 <- glmmTMB(abun ~ arid+ Microsite   + (1|Site), family = "poisson", ptsreps)
 
-m3.nb <- glmmTMB(abun ~ Microsite  + ndvi +(1|Site) + (1|year), family = "nbinom2", ptsreps)
+m3.nb <- glmmTMB(gr.abun ~  arid + Microsite  + ndvi +(1|Site), family = "nbinom2", ptsreps)
 
-summary(m3.nb)
-performance(m3.nb)
+m3.nb1 <- glmmTMB(gr.abun ~ arid + Microsite  + ndvi +(1|Site) + (1|year), family = "nbinom2", ptsreps)
 
-m3.nbint <- glmmTMB(abun ~ arid+ Microsite   + ndvi+ (1|Site/year/season), family = "nbinom1", ptsreps)
+AIC(m3.nb, m3.nb1)
 
+#no improvement with year
 
+m4.nb1 <- glmmTMB(gr.abun ~ arid + Microsite  + ndvi +(1|Site), family = "nbinom1", ptsreps)
+m4.nb2 <- glmmTMB(gr.abun ~ arid + Microsite  + ndvi +(1|Site), family = "nbinom2", ptsreps)
 
-summary(m3.nbint)
-
-
-ggplot(ptsreps, aes(arid, abun)) + geom_smooth(method = "lm")
-
-AIC(m2.1, m3.nb, m3.nbint)
-
-summary(m3.nbint)
-
-check_overdispersion(m2.1)
-summary(m3.nb)
-
-ggplot(ptsreps, aes(arid, abun, fill = Microsite)) + geom_smooth(method = "lm")
+AIC(m4.nb1, m4.nb2)
 
 
-performance(m2)
 
-ggplot(ptsreps, aes(ndvi, rich)) + geom_smooth(method = "lm")
-ggplot(ptsreps, aes(ndvi, arid)) + geom_smooth(method = "lm")
-ggplot(ptsreps, aes(arid, rich)) + geom_smooth(method = "lm")
-ggplot(ptsreps, aes(MAT, rich)) + geom_smooth(method = "lm")
-ggplot(ptsreps, aes(MAT, ndvi)) + geom_smooth(method = "lm")
+m4.int <- glmmTMB(gr.abun ~ arid * Microsite  + ndvi +(1|Site), family = "nbinom1", ptsreps)
+summary(m4.int)
 
-m3nb1 <- glmmTMB(gr.abun ~ arid + Microsite + (1|Site), family = "nbinom2", ptsreps)
-m3 <- glmmTMB(gr.abun ~ arid + Microsite + (1|Site), family = "nbinom1", ptsreps)
+m4.int2 <- glmmTMB(gr.abun ~ arid + Microsite  * ndvi +(1|Site), family = "nbinom1", ptsreps)
+summary(m4.int2)
 
-m3 <- glmmTMB(gr.abun ~ ndvi + Microsite + arid + (1|Site), family = "nbinom2", ptsreps)
-#check_overdispersion(m3)
-AIC(m3nb1, m3)
-summary(m3nb1)
+em <- emtrends(m4.int, ~Microsite, var = "arid")
+test(em)
+pairs(em)
+
+glmm.hp(m4.nb1)
+performance(m4.nb1)
+summary(m4.nb1)
+car::Anova(m4.nb1)
+
 
 ```
 
 ### Webers
 
 ```{r}
-m5 <- glmmTMB(gr.webers ~ cwm.site + arid: Microsite + (1|Site) + (1|year), data = pts)
-summary(m5)
 
-m6 <- glmmTMB(gr.webers ~ cwm.site + arid: Microsite + (1|Site) + (1|year), data = pts)
-summary(m6)
+cor.test(pts$gr.abun, pts$gr.webers)
+cor.test(site.env$mn.gr.abun, site.env$gr.webers)
 
-AIC(m5, m6)
-
-m5 <- glmmTMB(gr.webers ~ cwm.site.nat + arid: Microsite + (1|Site) + (1|year), data = pts)
-summary(m5)
-glmm.hp(m5)
-
-m5 <- glmmTMB(gr.webers ~ cwm.site.inv + arid: Microsite + (1|Site) + (1|year), data = pts)
-summary(m5)
-
-glmm.hp(m5)
-
-
-ggplot(pts, aes(cwm.site, log(gr.webers), fill = Microsite)) + geom_smooth(method = "lm")
-
-
-
-
-
-interact_plot(m5, cwm.site, arid)
-
-sites$tr.names <- paste(sites$Year, sites$Season, sites$Site)
-cwmsites <- left_join(cwm.ants, sites, by = "tr.names")
-
-m5 <- glmmTMB(webers.x ~  MAT  + cwm.site + total_precip_inches +  (1|Site), data = pts)
+m5 <- glmmTMB(gr.webers ~ cwm.site.nat + cwm.site.inv + arid + Microsite  + (1|Site), data = pts)
 summary(m5)
 
 
-g1<- glmm.hp(m5, commonality = TRUE)
-g1
+m5.1 <- glmmTMB(gr.webers ~ cwm.site.nat + cwm.site.inv + arid * Microsite  + (1|Site), data = pts)
+  
+summary(m5.1)  
+  
+
+m6 <- glmmTMB(gr.webers ~ cwm.site + arid + Microsite + ndvi + (1|Site), data = pts)
 
 
 
-plot.glmmhp(g1)
+m7 <- glmmTMB(gr.webers ~ cwm.site + arid + Microsite + (1|Site), data = pts)
+AIC(m6, m7)
 
-tst <- select(pts, webers, arid, cwm.site)
-tst <- drop_na(tst)
+#model without NDVI is better
 
-web <- pts$webersweb <- pts$webercwm.sites
-web <- drop_na(web)
-arid <- pts$arid
-site <- pts$cwm.site
-varpart(tst$webers, tst$arid, tst$cwm.site)
+
+summary(m7)
+car::Anova(m7)
 
 
 
-st <- left_join(cwmsites, mn.plt, by = c("Site", "Year"))
-
-
-m1 <- glmmTMB(webers ~  arid +cwm.site, st)
-
-summary(m1)
-
-library(interactions)
-
-interact_plot(m5, pred = cwm.site, modx = arid)
-
-ggplot(pts, aes(arid, cwm.site)) + geom_smooth(method = "lm")
-dry <- filter(cwmsites, arid < 15)
-ggplot(dry, aes(arid, webers)) + geom_smooth(method = "lm")
-
-
-library(predictmeans)
-m5 <- glmmTMB(r.mand ~  arid + Microsite  + cwm.site + (1|Site), data = pts)
-summary(m5)
-
-varcomp(m5)
-
-shapiro.test(resid(m5))
-performance(m5)
-
-simulationOutput <- simulateResiduals(fittedModel = m5, plot = F)
-
-residuals(simulationOutput)
-plot(simulationOutput)
-
-cor.test(pts$arid, pts$cwm.site)
-
-ggplot(pts, aes(arid, webers)) + geom_smooth(method = "lm")
-
-
-check_collinearity(m5)
 ```
 ### Mandible length
 ```{r}
 
+m9 <- glmmTMB(gr.rmand ~cwm.site.nat*arid + cwm.site.inv + arid + Microsite  + (1|Site), data = pts)
+summary(m9)
 
+m9 <- glmmTMB(gr.rmand ~cwm.site + arid + Microsite  + ndvi + (1|Site), data = pts)
+m10 <- glmmTMB(gr.rmand ~cwm.site + arid + Microsite   + (1|Site), data = pts)
+AIC(m9, m10)
 
+summary(m10)
+car::Anova(m10)
 
-
+m10 <- glmmTMB(gr.rmand ~cwm.site.inv + cwm.site.nat + arid + Microsite   + (1|Site), data = pts)
+summary(m10)
 ```
 
 
@@ -1539,221 +1373,126 @@ check_collinearity(m5)
 
 ```{r}
 
-seeds <- mutate(seeds, percent = ((2 - ending.weight)/2))
-seeds = seeds %>% mutate(y2 = ifelse(percent == 0, 0.00000000001, ifelse(percent == 1, 0.9999999999, percent)))
-
-seeds = seeds %>% mutate(bin = ifelse(percent == 1, 1, 0))
-
-ggplot(seeds, aes(bin)) + geom_bar()
-
-m2 <- glmmTMB(bin ~ gr.webers+ arid + Size +Microsite + ndvi + mn.gr.abun +  mean.abun + (1|Site/Visit), family=binomial(), seeds)
-summary(m2)
-glmm.hp(m2)
-emmeans(m2,pairwise~ Size*Microsite)
+seeds <- mutate(seeds, percent = (2 -ending.weight)/0.02)
 
 
 
+m6 <- glmmTMB(percent ~ Size + Microsite + arid + mean.inv + mean.native  + mn.gr.abun+ (1|Year) + (1|Site), seeds)
 
-m2 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + gr.webers  + (1|Site/Visit), family=binomial(), seeds)
-
-m3 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + gr.webers  + (1|Site) + (1|Visit), family=binomial(), seeds)
-
-
-m4 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + (1|Site) + (1|Year), family=binomial(), seeds)
-summary(m4)
-
-m5 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun  + mean.abun + Year + (1|Site), family=binomial(), seeds)
-
-
-m6 <- glmmTMB(ending.weight ~ Size + arid + Microsite + ndvi + mn.gr.abun  + mean.abun + Year + (1|Site), seeds)
-
+summary(m6)
+m6 <- glmmTMB(percent ~ Size + Microsite + ndvi  + mn.gr.abun+ gr.webers + arid + (1|Year) + (1|Site), seeds)
 
 summary(m6)
 
+m7 <- glmmTMB(percent ~ Size + Microsite + ndvi  + mn.gr.abun+ gr.webers+ (1|Year) + (1|Site), seeds)
+AIC(m6, m7)
 
-summary(m5)
+m8 <- glmmTMB(percent ~ Size + Microsite + ndvi  +  gr.webers + arid + (1|Year) + (1|Site), seeds)
 
+m9 <- glmmTMB(percent ~ Size + Microsite  + mn.gr.abun+ ndvi + (1|Site), seeds)
+glmm.hp(m9)
 
+m10 <- glmmTMB(percent ~ Size + Microsite + ndvi+ mn.gr.abun + arid + (1|Year) + (1|Site), seeds)
 
+m11 <- glmmTMB(percent ~ Size + Microsite + ndvi + mn.gr.abun +(1|Site), seeds)
+AIC(m10, m11)
 
-
-
-glmm.hp(m5)
-performance(m5)
-AIC(m4, m5)
-summary(m4)
-
-
-
-
-unique(seeds$Year)
-AIC(m2, m3)
-AIC(m2, m4)
-AIC(m2, m3, m4)
-
-summary(m3)
+summary(m11)
 
 
+m12 <- glmmTMB(percent ~ Size + Microsite + mn.gr.abun + arid + (1|Year) + (1|Site), seeds)
+summary(m12)
 
 
-m2.1 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + gr.webers + (1|Site), family=binomial(), seeds)
-AIC(m2, m2.1, m2.2)
+AIC(m10, m11, m12)
 
-m2.2 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + gr.webers + Year + (1|Site/Visit), family=binomial(), seeds)
-                
-sim <- simulateResiduals(m2)
-plot(sim)
+#keeping year because it improves a teeny bit
+
+m11.int <- glmmTMB(percent ~ Size*ndvi + Microsite + mn.gr.abun +(1|Year) + (1|Site), seeds)
+
+summary(m11.int)
+
+m11.int <- glmmTMB(percent ~  ndvi + Microsite +Size * mn.gr.abun*cwm.site + arid +  (1|Year) + (1|Site), seeds)
+
+summary(m11.int)
+
+#models with CWM sizes as interactions
 
 
-m2 <- glmmTMB(y2 ~ Size + arid+Microsite  + ndvi + mn.gr.abun + Year + mean.abun + (1|Site/Visit), family=beta_family(), seeds)
+m11.1 <- glmmTMB(percent ~  ndvi + Microsite +Size* gr.rmand + mn.gr.abun + arid + (1|Year) + (1|Site), seeds)
+summary(m11.1)
 
-
-m3 <- glmmTMB(y2 ~ Size + arid+Microsite  + ndvi + mn.gr.abun + Year + (1|Site), seeds)
-
-AIC(m2, m3)
-
-sim <- simulateResiduals(m2, quantreg = F)
-testUniformity(sim)
-plot(sim)
-summary(m2)
+m11.2 <- glmmTMB(percent ~  ndvi + Microsite +Size* gr.webers + mn.gr.abun + arid + (1|Year) + (1|Site), seeds)
+summary(m11.2)
 
 
 
 
+m11.4 <- glmmTMB(percent ~  ndvi*Size + Microsite + mn.gr.abun + arid  +(1|Year) + (1|Site), seeds)
+summary(m11.4)
 
-m3 <- glmmTMB(percent ~ Size + arid +Microsite  + ndvi + mn.gr.abun + Year + (1|Site/Visit), seeds)
+m11.5 <- glmmTMB(percent ~  ndvi +Size * Microsite + mn.gr.abun + arid + (1|Year) + (1|Site), seeds)
+summary(m11.5)
 
-
-
-check_overdispersion(m2)
-
-summary(m2)
-
-shapiro.test(resid(m2))
-
-sim <- simulateResiduals(m3, quantreg = TRUE)
-plot(sim)
-
-m2 <- glmmTMB(ending.weight ~ Size + Site*Microsite  + ndvi + mn.gr.abun, seeds)
-summary(m2)
+m11.6 <- glmmTMB(percent ~  ndvi + Microsite + mn.gr.abun + Size *arid + (1|Year) + (1|Site), seeds)
+summary(m11.6)
 
 
-te <- emtrends(m2, ~ Microsite*Site, var = "arid")
-test(te)
+m11.3 <- glmmTMB(percent ~  ndvi + Microsite +Size* cwm.site + mn.gr.abun + arid + (1|Year) + (1|Site), seeds)
+summary(m11.3)
 
-glmm.hp(m2)
+#seed size is significant
 
+m11.7 <- glmmTMB(percent ~  ndvi + Microsite + mn.gr.abun :Size + arid + cwm.site + (1|Year) + (1|Site), seeds)
+summary(m11.7)
 
-ggplot(seeds, aes(arid, ending.weight, fill = Microsite)) + geom_smooth(method = "lm") 
+glmm.hp(m11.7)
 
-ggplot(seeds, aes(ending.weight, color = Site, fill = Microsite)) + geom_boxplot()
+#both abundance and cwm.site are significant interactions, but cwm becomes insignificant when included alongside abundance
 
-m3 <- glmmTMB(ending.weight ~ Size + Microsite  + mn.gr.abun + arid + (1|Site), seeds)
-
-summary(m3)
-emmeans(m3, pairwise ~ Size)
-
-m3 <- glmmTMB(ending.weight ~ Size + mean.abun + Microsite + mn.gr.abun + (1|Site), seeds)
-summary(m3)
-
-m4 <- glmmTMB(ending.weight ~ Size + ndvi + Microsite + mn.gr.abun + (1|Site), seeds)
-
-AIC(m2, m4)
-
-AIC(m2, m3, m4)
-summary(m2)
+m11.8 <- glmmTMB(percent ~  Microsite + mn.gr.abun * Size + arid + cwm.site*Size + (1|Year) + (1|Site), seeds)
+summary(m11.8)
 
 
-model <- psem(
-  glmmTMB(ending.weight ~ ndvi +  arid  + gr.webers  + mn.gr.abun  + (1|Site), seeds),
-  glmmTMB(mn.gr.abun~  ndvi + arid + (1|Site), seeds),
-  glmmTMB(gr.webers~  ndvi + arid + (1|Site), seeds), seeds,
-  glmmTMB(ndvi~ arid, site.env)
-)
 
-plot(model)
-summary(model)
+AIC(m11.3, m11.7, m11.8)
 
-glmm.hp(m3)
+m11.9 <- glmmTMB(percent ~  ndvi + Microsite + mn.gr.abun *Size + arid + (1|Year)+ (1|Site), seeds)
+summary(m11.9)
+car::Anova(m11.9)
+
+
+
+em <-emtrends(m11.9, ~"Size", var= "mn.gr.abun")
+
+
+pairs(em)
+summary(em)
+test(em)
+plot(em)
+
+ggplot(seeds, aes(mn.gr.abun, percent, fill = Size)) + geom_smooth(method = "lm")
+
+ggplot(seeds, aes(ndvi, percent, fill = Size)) + geom_smooth(method = "lm")
+
+
 
 ggplot(seeds, aes(mn.abun.ants, gr.webers)) + geom_smooth(method = "lm")
 
-ggplot(seeds, aes(mn.abun.ants, ending.weight)) + geom_smooth(method = "lm")
-ggplot(seeds, aes(mn.gr.abun, ending.weight)) + geom_smooth(method = "lm")
+ggplot(seeds, aes(mn.abun.ants, percent)) + geom_smooth(method = "lm")
+ggplot(seeds, aes(mn.gr.abun, percent)) + geom_smooth(method = "lm")
 
-ggplot(seeds, aes(gr.webers, ending.weight)) + geom_smooth(method = "lm")
+ggplot(seeds, aes(gr.webers, percent)) + geom_smooth(method = "lm")
 
-ggplot(seeds, aes(arid, ending.weight)) + geom_smooth(method = "lm")
+ggplot(seeds, aes(arid, percent)) + geom_smooth(method = "lm")
 
 
-ggplot(seeds, aes(ndvi, ending.weight)) + geom_smooth(method = "lm")
+ggplot(seeds, aes(ndvi, percent)) + geom_smooth(method = "lm")
 
 ggplot(seeds, aes(arid, mn.abun.ants)) + geom_smooth(method = "lm")
 
 
 
-car::Anova(m2)
-
-
-m2 <- glmmTMB(abun ~   + mean.abun +  (1|Site), family = "nbinom2", pts2)
-summary(m2)
-
-sds <- left_join(seeds, plt.ag, by = c("Site", "Year", "Microsite" = "Microsite.x", "Rep"))
-
-sds <- filter(sds, Season.x == "spring")
-
-m2 <- glmmTMB(percent ~ Size + ndvi + Microsite +  arid  + webers  + mn.abun.ants  + (1|Site), family = "poisson", seeds)
-summary(m2)
-
-performance(m2)
-
-m3 <- glmmTMB(percent ~ Size + ndvi + Microsite +  arid  + mean.abun.x + (1|Site), seeds)
-summary(m3)
-performance(m3)
-
-m4 <- glmmTMB(percent ~ Size +  arid +  mn.abun.ants  + ndvi + webers +  Visit + Year + (1|Site), family = "beta_family", seeds)
-summary(m4)
-shapiro.test(resid(m4))
-
-
-simulateResiduals(m4, n = 100, plot = TRUE)
-
-check_distribution(m4)
-
-check_overdispersion(m4)
-car::Anova(m4)
-performance(m4)
-
-
-
-performance(m3)
-performance(m2)
-
-cor.test(seeds$ndvi, seeds$mean.abun.x)
-
-library(piecewiseSEM)
-
-model <- psem(
-  glmmTMB(percent ~ ndvi +  arid  + webers  + mn.abun.ants  + (1|Site), seeds),
-  glmmTMB(mn.abun.ants~  ndvi + arid + (1|Site), seeds),
-  glmmTMB(webers~  ndvi + arid + (1|Site), seeds), seeds
-)
-
-
-ggplot(seeds, aes(webers, percent)) + geom_smooth()
-ggplot(seeds, aes(r.mand, percent)) + geom_smooth()
-
-ggplot(seeds, aes(arid, webers)) + geom_smooth(method = "lm")
-
-
-
-
-cor.test(seeds$webers, seeds$r.mand)
-cor.test(seeds$webers, seeds$mn.abun.ants)
-cor.test(seeds$r.mand, seeds$mn.abun.ants)
-summary(model)
-plot(model)
-car::Anova(m2)
 ```
 
 
@@ -1766,4 +1505,39 @@ ggplot(plt.ag, aes(Site.x, abun, fill = Microsite.x)) + geom_boxplot()
 ggplot(plt.ag, aes(Site.x, rich, fill = Microsite.x, color = as.factor(year))) + geom_boxplot()
 
 ggplot(plt.ag, aes(Microsite.x, abun)) + geom_boxplot()
+
+
+
+seeds <- mutate(seeds, percent = ((2 - percent)/2))
+seeds = seeds %>% mutate(y2 = ifelse(percent == 0, 0.00000000001, ifelse(percent == 1, 0.9999999999, percent)))
+
+seeds = seeds %>% mutate(bin = ifelse(percent == 1, 1, 0))
+
+ggplot(seeds, aes(bin)) + geom_bar()
+
+m2 <- glmmTMB(bin ~ gr.webers+ arid + Size +Microsite + ndvi + mn.gr.abun +  mean.abun + (1|Site/Visit), family=binomial(), seeds)
+summary(m2)
+glmm.hp(m2)
+emmeans(m2,pairwise~ Size*Microsite)
+
+m2 <- glmmTMB(bin ~ Size + (1|Site), family=binomial(), seeds)
+summary(m2)
+glmm.hp(m2)
+emmeans(m2,pairwise~ Size)
+car::Anova(m2)
+
+m2 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + gr.webers  + (1|Site/Visit), family=binomial(), seeds)
+
+m3 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + gr.webers  + (1|Site) + (1|Visit), family=binomial(), seeds)
+
+
+m4 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + (1|Site) + (1|Year), family=binomial(), seeds)
+summary(m4)
+
+m5 <- glmmTMB(bin ~ Size + Microsite + arid + mean.abun  + mn.gr.abun+ (1|Year) + (1|Site), family=binomial(), seeds)
+summary(m5)
+emmeans(m5, pairwise~ Size|Microsite)
+
+
+ggplot(seeds, aes(bin, Size, fill = Microsite)) + geom_boxplot()
 ```
