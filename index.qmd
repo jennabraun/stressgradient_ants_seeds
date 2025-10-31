@@ -1526,6 +1526,7 @@ ggplot(seeds, aes(arid, mn.abun.ants)) + geom_smooth(method = "lm")
 
 # Seed Removal Figures
 ```{r}
+library(gridExtra)
 
 seeds$Size <- factor(seeds$Size, levels = c("small", "med", "large"))
 
@@ -1565,9 +1566,6 @@ p
 
 
 
-#
-ggplot(test2, aes(PC1, value, color = type)) + geom_point(aes(color = type)) + stat_smooth(data = filter(test2, type == "SES3"), method = "lm") + stat_smooth(data = filter(test2, type == "mpd.obs.z"), method = "lm", linetype = "dashed", se = FALSE) + xlab("PC1") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-panel.background = element_rect(colour = "black", size=1, fill = NA), axis.line = element_line(colour = "black")) + ylab("Standardized Effect Size Dispersion") + geom_hline(yintercept = 0, linetype = "dashed") + scale_color_manual(values = c( "#DF7861", "#94B49F"), labels = c("Functional", "Phylogenetic")) + theme(legend.position= c(0.8, 0.9)) + theme(legend.title=element_blank()) + theme(text = element_text(size = 13))
 
 ```
 # Ant Size Figure
@@ -1585,34 +1583,6 @@ p <- glmm.hp(mod3,commonality=TRUE)
 
 p[["variables"]] <- c("CWM Seed Size", "Aridity", "Microsite")
 plot(p, dig = 2)
-
-p + labs(
-  title = "Relative Importance of Predictors in GLMM",
-  subtitle = "Based on Hierarchical Partitioning",
-  x = "Predictor Variables",
-  y = "Individual Effect (Marginal R²)",
-  caption = "Source: R's iris dataset"
-)
-
-plot(v1, Xnames = NA)
-text(0.1, 1, labels = "Environment")
-
-plots <- list(a,b, c)
-grobs <- list()
-widths <- list()
-
-for (i in 1:length(plots)){
-    grobs[[i]] <- ggplotGrob(plots[[i]])
-    widths[[i]] <- grobs[[i]]$widths[2:5]
-}
-
-maxwidth <- do.call(grid::unit.pmax, widths)
-for (i in 1:length(grobs)){
-     grobs[[i]]$widths[2:5] <- as.list(maxwidth)
-}
-
-p <- do.call("grid.arrange", c(grobs, ncol = 1))
-p
 
 
 
@@ -1733,47 +1703,3 @@ p
 
 
 
-## Viz and models
-
-```{r}
-
-ggplot(plt.ag, aes(Site.x, abun, fill = Microsite.x)) + geom_boxplot()
-ggplot(plt.ag, aes(Site.x, rich, fill = Microsite.x, color = as.factor(year))) + geom_boxplot()
-
-ggplot(plt.ag, aes(Microsite.x, abun)) + geom_boxplot()
-
-
-
-seeds <- mutate(seeds, percent = ((2 - percent)/2))
-seeds = seeds %>% mutate(y2 = ifelse(percent == 0, 0.00000000001, ifelse(percent == 1, 0.9999999999, percent)))
-
-seeds = seeds %>% mutate(bin = ifelse(percent == 1, 1, 0))
-
-ggplot(seeds, aes(bin)) + geom_bar()
-
-m2 <- glmmTMB(bin ~ gr.webers+ arid + Size +Microsite + ndvi + mn.gr.abun +  mean.abun + (1|Site/Visit), family=binomial(), seeds)
-summary(m2)
-glmm.hp(m2)
-emmeans(m2,pairwise~ Size*Microsite)
-
-m2 <- glmmTMB(bin ~ Size + (1|Site), family=binomial(), seeds)
-summary(m2)
-glmm.hp(m2)
-emmeans(m2,pairwise~ Size)
-car::Anova(m2)
-
-m2 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + gr.webers  + (1|Site/Visit), family=binomial(), seeds)
-
-m3 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + gr.webers  + (1|Site) + (1|Visit), family=binomial(), seeds)
-
-
-m4 <- glmmTMB(bin ~ Size + arid + Microsite + ndvi + mn.gr.abun + (1|Site) + (1|Year), family=binomial(), seeds)
-summary(m4)
-
-m5 <- glmmTMB(bin ~ Size + Microsite + arid + mean.abun  + mn.gr.abun+ (1|Year) + (1|Site), family=binomial(), seeds)
-summary(m5)
-emmeans(m5, pairwise~ Size|Microsite)
-
-
-ggplot(seeds, aes(bin, Size, fill = Microsite)) + geom_boxplot()
-```
