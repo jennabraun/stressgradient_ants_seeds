@@ -1,1 +1,12 @@
-# ant_seed_interactions
+# The direct and indirect drivers of annual seed size, ant worker size and size-dependent seed removal rates along a desert climatic gradient
+
+See URL for the analysis. 
+
+<img width="599" height="617" alt="image" src="https://github.com/user-attachments/assets/10a7c45a-fac0-4adb-9fea-02b411899722" />
+
+
+1.	Granivorous ants facilitate ecosystem functioning in deserts by collecting and dispersing large quantities of seeds. Along desert stress gradients, environmental filtering selects species with traits that confer tolerance to local conditions such as body size and seed size. We asked if environmental stress shapes ant-seed interactions by filtering the functional trait composition of the ant and plant communities. 
+2.	We examined the direct and indirect responses of annual seed size, ant worker size, and seed removal rates along a desert climatic stress gradient spanning two Californian deserts. 
+3.	Environmental stress influenced the abundance, richness and the functional composition of both communities. Ant body size and annual seed size both increased with aridity. The size-matching relationship between annual seed size and ant body size was predominantly explained by their shared environmental responses to the aridity gradient. However, annual seed size made a unique contribution to ant body size, indicating a bottom-up constraint on the functional structure of ant communities. 
+4.	In contrast, we found no evidence that ant body size predicted seed size, and seed size selectivity was also unrelated to ant body size. Instead, ant foraging choices were density-dependent, with removal rates for less-preferred seed sizes increasing with ant abundance. Productivity increased ant abundance but also decreased seed removal rates along the gradient. This pattern indicates that overall predation rates are influenced by plant productivity and that selectivity emerges from ant foraging behaviour. Ant foraging choices were therefore driven more by biotic drivers than environmental drivers. 
+5.	The interdependence suggests that future increases in environmental stress may drive shifts in the functional composition of both ant and plant communities, with implications for ecosystem functioning and plant community assembly due to reductions in ant community abundances. Understanding these multi-trophic assembly processes is essential for predicting desert ecosystem reorganization under climate change.
